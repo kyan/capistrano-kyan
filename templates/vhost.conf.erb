@@ -1,0 +1,15 @@
+server {
+  listen 80;
+  server_name <%= host %>;
+  root <%= current_path %>/public;
+  passenger_enabled on;
+  rails_env <%= app_env %>;
+
+  # serve static content directly
+  location ~* \.(ico|jpg|gif|png|swf|html)$ {
+    if (-f $request_filename) {
+      expires max;
+      break;
+    }
+  }
+}

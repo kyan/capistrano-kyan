@@ -6,7 +6,7 @@ A growing collection of cap tasks that we find useful in one place.
 
 Add this line to your application's Gemfile:
 
-    gem 'capistrano-kyan'
+    gem 'capistrano-kyan', :git => "https://github.com/kyan/capistrano-kyan.git", :require => false
 
 And then execute:
 

@@ -3,7 +3,7 @@ server {
   server_name <%= vhost_server_name %>;
   root <%= current_path %>/public;
   passenger_enabled on;
-  rails_env <%= app_env %>;
+  rails_env <%= vhost_env %>;
 
   # serve static content directly
   location ~* \.(ico|jpg|gif|png|swf|html)$ {

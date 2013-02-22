@@ -12,6 +12,7 @@ module CapistranoKyan
       capistrano_config.load do
         before(CapistranoIntegration::TASKS) do
           _cset(:app_env)             { (fetch(:rails_env) rescue 'staging') }
+          _cset(:vhost_env)           { fetch(:app_env) }
           _cset(:vhost_tmpl_path)     { 'config/deploy' }
           _cset(:vhost_tmpl_name)     { 'vhost.conf.erb' }
           _cset(:vhost_server_path)   { '/etc/nginx/sites-enabled' }

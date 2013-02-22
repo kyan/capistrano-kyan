@@ -1,6 +1,6 @@
 # Capistrano Kyan
 
-Capistrano plugin that includes a collection of task we find useful here at Kyan.
+Capistrano plugin that includes a collection of tasks we find useful here at Kyan.
 
 ## Usage
 
@@ -20,10 +20,15 @@ And load it into your deployment script `config/deploy.rb`:
 require 'capistrano-kyan'
 ```
 
-Add kyan restart task hook:
+Add kyan vhost task hook:
 
 ```ruby
 after "deploy:setup", "kyan:vhost:setup"
+```
+
+Add kyan db task hook:
+
+```ruby
 after "deploy:setup", "kyan:db:setup"
 ```
 

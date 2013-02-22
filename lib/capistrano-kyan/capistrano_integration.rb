@@ -11,11 +11,28 @@ module CapistranoKyan
     def self.load_into(capistrano_config)
       capistrano_config.load do
         before(CapistranoIntegration::TASKS) do
-          _cset(:app_env)                    { (fetch(:rails_env) rescue 'staging') }
+          _cset(:app_env)             { (fetch(:rails_env) rescue 'staging') }
+          _cset(:vhost_tmpl_path)     { 'config/deploy' }
+          _cset(:vhost_tmpl_name)     { 'vhost.conf.erb' }
+          _cset(:vhost_server_path)   { '/etc/nginx/sites-enabled' }
+          _cset(:vhost_server_name)   { File.basename(deploy_to) rescue fetch(:app_env) }
         end
 
         def appize(app, prefix = 'staging')
           "#{app.gsub('.','_')}_#{prefix}"
+        end
+
+        def tmpl_server_location
+          run "mkdir -p #{shared_path}/config"
+          File.join(shared_path, 'config', "#{File.basename(deploy_to)}.conf")
+        end
+
+        def symlink(target, link)
+          run "ln -nfs #{target} #{link}"
+        end
+
+        def parse_template(template)
+          ERB.new(File.read(template), nil , '-').result(binding)
         end
 
         #
@@ -26,23 +43,28 @@ module CapistranoKyan
             desc <<-DESC
               Creates and symlinks an Nginx virtualhost entry.
 
-              By default, this task uses a template called vhost.conf.erb found
-              either in the :template_dir or /config/deploy folders.
+              By default, this task uses a builtin template and should
+              work fine for most cases. If you to customise this,
+              you can run rake kyan:vhost:clone. Or you can create
+              own vhost.conf.erb, either in the :template_dir or
+              the /config/deploy folder.
             DESC
             task :setup, :except => { :no_release => true } do
-              location = fetch(:template_dir, "config/deploy") + '/vhost.conf.erb'
-              server_conf_path = fetch(:server_vhost_path, "/etc/nginx/sites-enabled")
-              host = File.basename(deploy_to)
+              locations = [
+                File.join(File.dirname(__FILE__),'../../templates'),
+                vhost_tmpl_path
+              ]
 
-              if File.file?(location)
-                template = File.read(location)
-                config = ERB.new(template, nil , '-')
-                run "mkdir -p #{shared_path}/config"
-                dest = "#{shared_path}/config/#{host}.conf"
-                put config.result(binding), dest
-                run "ln -nfs #{dest} #{server_conf_path}"
-              else
-                puts "Skipping! Could not find a suitable template."
+              locations.each do |location|
+                template = File.join(location, vhost_tmpl_name)
+
+                if File.file? template
+                  put parse_template(template), tmpl_server_location
+                  symlink(tmpl_server_location, vhost_server_path)
+                  break
+                else
+                  puts "Skipping! Could not find a suitable template."
+                end
               end
             end
           end

@@ -114,14 +114,7 @@ module CapistranoKyan
               path_to_appl_database_yml = "#{release_path}/config/database.yml"
               path_to_conf_database_yml = "#{shared_path}/config/database.yml"
 
-              run <<-END
-                set -x;
-                if [ -f #{path_to_conf_database_yml} ]; then
-                  ln -nfs #{path_to_conf_database_yml} #{path_to_appl_database_yml}
-                else
-                  echo "Symlink not possible, database.yml not found.";
-                fi;
-              END
+              run "ln -nfs #{path_to_conf_database_yml} #{path_to_appl_database_yml}"
             end
           end
 

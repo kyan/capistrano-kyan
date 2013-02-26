@@ -36,10 +36,10 @@ module CapistranoKyan
           ERB.new(File.read(template), nil , '-').result(binding)
         end
 
-        #
-        # vhost cap tasks
-        #
         namespace :kyan do
+          #
+          # vhost cap tasks
+          #
           namespace :vhost do
             desc <<-DESC
               Creates and symlinks an Nginx virtualhost entry.

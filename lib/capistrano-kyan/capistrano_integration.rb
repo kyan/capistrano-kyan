@@ -5,7 +5,8 @@ module CapistranoKyan
   class CapistranoIntegration
     TASKS = [
       'kyan:db:setup',
-      'kyan:vhost:setup'
+      'kyan:vhost:setup',
+      'kyan:vhost:show'
     ]
 
     def self.load_into(capistrano_config)
@@ -36,6 +37,17 @@ module CapistranoKyan
           ERB.new(File.read(template), nil , '-').result(binding)
         end
 
+        def build_vhost(path, name)
+          [
+            File.join(path, name),
+            File.join(File.dirname(__FILE__),'../../templates/vhost.conf.erb')
+          ].each do |template|
+            if File.file? template
+              return parse_template(template)
+            end
+          end
+        end
+
         namespace :kyan do
           #
           # vhost cap tasks
@@ -51,22 +63,17 @@ module CapistranoKyan
               the /config/deploy folder.
             DESC
             task :setup, :except => { :no_release => true } do
-              locations = [
-                File.join(File.dirname(__FILE__),'../../templates'),
-                vhost_tmpl_path
-              ]
-
-              locations.each do |location|
-                template = File.join(location, vhost_tmpl_name)
-
-                if File.file? template
-                  put parse_template(template), tmpl_server_location
-                  symlink(tmpl_server_location, vhost_server_path)
-                  break
-                else
-                  puts "Skipping! Could not find a suitable template."
-                end
+              if tmpl = build_vhost(vhost_tmpl_path, vhost_tmpl_name)
+                put tmpl, tmpl_server_location
+                symlink(tmpl_server_location, vhost_server_path)
+              else
+                puts "Could not find a suitable template."
               end
+            end
+
+            desc "Displays the vhost that will be uploaded to server"
+            task :show, :except => { :no_release => true } do
+              puts build_vhost(vhost_tmpl_path, vhost_tmpl_name)
             end
           end
 

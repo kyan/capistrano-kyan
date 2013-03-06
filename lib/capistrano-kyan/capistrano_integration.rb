@@ -14,7 +14,7 @@ module CapistranoKyan
         before(CapistranoIntegration::TASKS) do
           _cset(:app_env)             { (fetch(:rails_env) rescue 'staging') }
           _cset(:vhost_env)           { fetch(:app_env) }
-          _cset(:vhost_tmpl_path)     { 'config/deploy' }
+          _cset(:vhost_tmpl_path)     { 'config/vhosts' }
           _cset(:vhost_tmpl_name)     { 'vhost.conf.erb' }
           _cset(:vhost_server_path)   { '/etc/nginx/sites-enabled' }
           _cset(:vhost_server_name)   { File.basename(deploy_to) rescue fetch(:app_env) }
@@ -56,11 +56,10 @@ module CapistranoKyan
             desc <<-DESC
               Creates and symlinks an Nginx virtualhost entry.
 
-              By default, this task uses a builtin template and should
-              work fine for most cases. If you to customise this,
-              you can run rake kyan:vhost:clone. Or you can create
-              own vhost.conf.erb, either in the :template_dir or
-              the /config/deploy folder.
+              By default, this task uses a builtin template which you
+              see the output with rake kyan:vhost:show. If you need to
+              customise this, you can create your own erb template and
+              update the :vhost_tmpl_path and :vhost_tmpl_name variables.
             DESC
             task :setup, :except => { :no_release => true } do
               if tmpl = build_vhost(vhost_tmpl_path, vhost_tmpl_name)

@@ -4,6 +4,7 @@ require 'capistrano/version'
 module CapistranoKyan
   class CapistranoIntegration
     TASKS = [
+      'deploy:seed',
       'kyan:db:setup',
       'kyan:vhost:setup',
       'kyan:vhost:show'
@@ -45,6 +46,13 @@ module CapistranoKyan
             if File.file? template
               return parse_template(template)
             end
+          end
+        end
+
+        namespace :deploy do
+          desc "Load the database with seed data"
+          task :seed do
+            run "cd #{current_path}; bundle exec rake db:seed RAILS_ENV=#{app_env}"
           end
         end
 

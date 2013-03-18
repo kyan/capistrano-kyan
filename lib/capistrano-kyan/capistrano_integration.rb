@@ -5,6 +5,7 @@ module CapistranoKyan
   class CapistranoIntegration
     TASKS = [
       'deploy:seed',
+      'deploy:add_env',
       'kyan:db:setup',
       'kyan:vhost:setup',
       'kyan:vhost:show'
@@ -54,7 +55,14 @@ module CapistranoKyan
           task :seed do
             run "cd #{current_path}; bundle exec rake db:seed RAILS_ENV=#{app_env}"
           end
+
+          desc "Adds a .env file with the RAILS_ENV set inside"
+          task :add_env do
+            put "RAILS_ENV=#{app_env}", "#{release_path}/.env"
+          end
         end
+
+        after "deploy:finalize_update", "deploy:add_env"
 
         namespace :kyan do
           #

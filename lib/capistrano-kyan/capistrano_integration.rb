@@ -8,7 +8,15 @@ module CapistranoKyan
       'deploy:add_env',
       'kyan:db:setup',
       'kyan:vhost:setup',
-      'kyan:vhost:show'
+      'kyan:vhost:show',
+      'nginx:start',
+      'nginx:stop',
+      'nginx:restart',
+      'nginx:reload',
+      'foreman:export',
+      'foreman:start',
+      'foreman:stop',
+      'foreman:restart'
     ]
 
     def self.load_into(capistrano_config)
@@ -56,13 +64,51 @@ module CapistranoKyan
             run "cd #{current_path}; bundle exec rake db:seed RAILS_ENV=#{app_env}"
           end
 
-          desc "Adds a .env file with the RAILS_ENV set inside"
           task :add_env do
             put "RAILS_ENV=#{app_env}", "#{release_path}/.env"
           end
         end
 
         after "deploy:finalize_update", "deploy:add_env"
+
+        namespace :nginx do
+          task :start, :roles => :app, :except => { :no_release => true } do
+            run "sudo /etc/init.d/nginx start"
+          end
+
+          task :stop, :roles => :app, :except => { :no_release => true } do
+            run "sudo /etc/init.d/nginx stop"
+          end
+
+          task :restart, :roles => :app, :except => { :no_release => true } do
+            run "sudo /etc/init.d/nginx restart"
+          end
+
+          task :reload, :roles => :app, :except => { :no_release => true } do
+            run "sudo /etc/init.d/nginx reload"
+          end
+        end
+
+        namespace :foreman do
+          desc "Export the Procfile to Ubuntu's upstart scripts"
+          task :export, :roles => :app do
+            run "cd #{release_path} && sudo foreman export upstart /etc/init -a #{application} -u #{user} -l #{shared_path}/log"
+          end
+          desc "Start the application services"
+          task :start, :roles => :app do
+            sudo "start #{application}"
+          end
+
+          desc "Stop the application services"
+          task :stop, :roles => :app do
+            sudo "stop #{application}"
+          end
+
+          desc "Restart the application services"
+          task :restart, :roles => :app do
+            run "sudo start #{application} || sudo restart #{application}"
+          end
+        end
 
         namespace :kyan do
           #

@@ -96,17 +96,17 @@ module CapistranoKyan
           end
           desc "Start the application services"
           task :start, :roles => :app do
-            sudo "start #{application}"
+            sudo "start #{vhost_server_name}"
           end
 
           desc "Stop the application services"
           task :stop, :roles => :app do
-            sudo "stop #{application}"
+            sudo "stop #{vhost_server_name}"
           end
 
           desc "Restart the application services"
           task :restart, :roles => :app do
-            run "sudo start #{application} || sudo restart #{application}"
+            run "sudo start #{vhost_server_name} || sudo restart #{vhost_server_name}"
           end
         end
 

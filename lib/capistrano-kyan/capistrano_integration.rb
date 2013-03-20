@@ -92,7 +92,7 @@ module CapistranoKyan
         namespace :foreman do
           desc "Export the Procfile to Ubuntu's upstart scripts"
           task :export, :roles => :app do
-            run "cd #{release_path} && sudo foreman export upstart /etc/init -a #{application} -u #{user} -l #{shared_path}/log"
+            run "cd #{release_path} && sudo foreman export upstart /etc/init -a #{vhost_server_name} -u #{user} -l #{shared_path}/log"
           end
           desc "Start the application services"
           task :start, :roles => :app do

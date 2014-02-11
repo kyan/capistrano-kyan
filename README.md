@@ -10,7 +10,7 @@ Add the library to your `Gemfile`:
 
 ```ruby
 group :development do
-  gem 'capistrano-kyan', :git => "https://github.com/kyan/capistrano-kyan.git", :require => false
+  gem 'capistrano-kyan'
 end
 ```
 

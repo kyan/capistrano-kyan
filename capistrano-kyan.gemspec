@@ -12,14 +12,14 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Capistrano tasks for database.yml and vhost creation}
   gem.summary       = %q{A bunch of useful Capistrano tasks}
   gem.homepage      = "http://github.com/kyan/capistrano-kyan"
+  gem.licenses      = ['MIT']
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
+  gem.add_development_dependency 'rake', '~> 0'
 
-  gem.add_development_dependency 'rake'
-
-  gem.add_runtime_dependency 'capistrano', '~> 2.14.1'
+  gem.add_runtime_dependency 'capistrano',  '~> 2.14', '>= 2.14.1'
 end

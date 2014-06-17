@@ -6,7 +6,6 @@ module CapistranoKyan
     TASKS = [
       'deploy:seed',
       'deploy:add_env',
-      'kyan:db:setup',
       'kyan:vhost:setup',
       'kyan:vhost:show',
       'nginx:start',
@@ -142,39 +141,6 @@ module CapistranoKyan
           # database.yml cap tasks
           #
           namespace :db do
-            desc <<-DESC
-              Creates a database.yml file in the apps shared path.
-            DESC
-            task :setup, :except => { :no_release => true } do
-
-              require 'digest/sha1'
-              app = appize(application, fetch(:stage))
-              database = fetch(:db_database, app)
-              username = fetch(:db_username, app)
-              password = Capistrano::CLI.ui.ask("DB password for #{database} (empty for default): ")
-              password = password.empty? ? Digest::SHA1.hexdigest(database) : password
-
-              default_template = <<-EOF
-      base: &base
-        encoding: utf8
-        adapter: postgresql
-        pool: <%= fetch(:db_pool, 5) %>
-        host: <%= fetch(:db_host, 'localhost') %>
-      <%= fetch(:stage) %>:
-        database: <%= database %>
-        username: <%= username %>
-        password: <%= password %>
-        <<: *base
-              EOF
-
-              location = fetch(:template_dir, "config/deploy") + '/database.yml.erb'
-              template = File.file?(location) ? File.read(location) : default_template
-              config = ERB.new(template, nil , '-')
-
-              run "mkdir -p #{shared_path}/config"
-              put config.result(binding), "#{shared_path}/config/database.yml"
-            end
-
             #
             # Updates the symlink for database.yml file to the just deployed release.
             #

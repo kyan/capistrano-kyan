@@ -155,6 +155,7 @@ You can modify any of the following options in your `deploy.rb` config.
 - `vhost_tmpl_path` - Set vhost template path. Default to `config/deploy`.
 - `vhost_tmpl_name` - Set vhost template name. Default to `vhost.conf.erb`.
 - `vhost_server_path` - Set vhost server path. Default to `/etc/nginx/sites-enabled`.
+- `procfile` - Set procfile filename for upstart export. Default to `Procfile`.
 
 ## Available Tasks
 

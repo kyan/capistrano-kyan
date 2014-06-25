@@ -27,6 +27,7 @@ module CapistranoKyan
           _cset(:vhost_tmpl_name)     { 'vhost.conf.erb' }
           _cset(:vhost_server_path)   { '/etc/nginx/sites-enabled' }
           _cset(:vhost_server_name)   { File.basename(deploy_to) rescue fetch(:app_env) }
+          _cset(:procfile) 				    { 'Procfile' }
         end
 
         def appize(app, prefix = 'staging')
@@ -91,7 +92,7 @@ module CapistranoKyan
         namespace :foreman do
           desc "Export the Procfile to Ubuntu's upstart scripts"
           task :export, :roles => :app do
-            run "cd #{release_path} && sudo foreman export upstart /etc/init -a #{vhost_server_name} -u #{user} -l #{shared_path}/log"
+						run "cd #{release_path} && sudo foreman export upstart /etc/init -a #{vhost_server_name} -f ./#{procfile} -u #{user} -l #{shared_path}/log"
           end
           desc "Start the application services"
           task :start, :roles => :app do

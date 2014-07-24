@@ -14,7 +14,7 @@ Add the library to your `Gemfile`:
 
 ```ruby
 group :development do
-  gem 'capistrano-kyan'
+  gem 'capistrano-kyan', require: false
 end
 ```
 
